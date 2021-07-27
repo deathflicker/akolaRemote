@@ -1,0 +1,467 @@
+<html>
+    <head>
+        <title>
+            Akola Air
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+        <style>
+            *{
+                padding: 0;
+                margin: 0;
+            }
+            body{
+                background-color: black;
+                padding-right: 0.5%;
+                padding-left: 0.5%;
+            }
+            ::-webkit-scrollbar-thumb {
+                background: black; 
+            }
+            header{
+                position: relative;
+                width: 100%;
+                height: 5%;
+                display: flex;
+                justify-content: center;
+                align-items: flex-start;
+            }
+            #signal{
+                display: none;
+                background-color: lavender;
+                width: 10%;
+                height: 50%;
+                position: relative;
+                border-radius: 20%;
+                box-shadow: 0 0 7px #fff,0 0 10px #fff,0 0 21px #fff,0 0 42px #0fa,0 0 82px #0fa,0 0 92px #0fa,0 0 102px #0fa,0 0 151px #0fa;
+            }
+            #secondPannel{
+                position: relative;
+                width: 100%;
+                height: 10%;
+                display: flex;
+                justify-content: center;
+            }
+            #secondPannel button{
+                width: 100%;
+                font-size: 150%;
+                color: black;
+                border-radius: 0%;
+                border-color: black;
+            }
+            #channelList{
+                width: 100%;
+                height: 70%;
+                overflow: auto;
+                overflow-y: auto;
+                margin-top: 20%;
+                text-align: center;
+                border: solid 0.1px transparent;
+                display: none;
+                flex-direction: column;
+                align-items: center;
+            }
+            #channelList select{
+                width: 60%;
+                height: 10%;
+                font-size: 150%;
+            }
+            #channelList label{
+                font-size: 120%;
+                color: white;
+                font-family: sans-serif;
+            }
+            #channels{
+                position: relative;
+                width: 100%;
+                height: 40%;
+                overflow-x: auto;
+                display: none;
+                flex-direction: row;
+                align-items: center;
+                scroll-behavior: smooth;
+            }
+            #channels img{
+                width: 40%;
+                height: 60%;
+                margin-right: 2.5%;
+                margin-left: 2.5%;
+                border: solid white 5px;
+                background-color: lavender;
+                padding: 2%;
+            }
+            #channels img:hover{
+                border: solid slateblue 5px;
+            }
+            #playChnl{
+                background-color: slateblue;
+                color: white;
+                border: solid 2px slateblue;
+                width: 50%;
+                height: 12%;
+                font-size: 150%;
+                margin-top: 5%;
+                position: relative;
+                display: none;
+            }
+            #waitDiv{
+                background-color: black;
+                width: 100%;
+                height: 100%;
+                position: fixed;
+                z-index: 10;
+                transition: 0.5s;
+                color: white;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                font-size: 250%;
+                font-family: sans-serif;
+            }
+        </style>
+    </head>
+    <body scroll="no" style="overflow: hidden">
+        <meta 
+             name='viewport' 
+             content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' 
+        />
+
+        <div id="waitDiv">
+            Please Wait...
+        </div>
+        
+
+        <!--Contains button press signal indicator-->
+        <header>
+            <!--indicates signal when a button is pressed-->
+            <div id="signal">
+                
+            </div>
+        </header>
+
+
+        <!--contains on and off button-->
+        <div id="secondPannel">
+            <!--Turn on JioTv Button-->
+            <button style="background-color: lightgreen; border-right: solid 5px black; border-top-right-radius: 30%;" onclick="blink();turn('on')">On</button>
+            
+            <!--Turn off JioTv + Computer-->
+            <button style="background-color: rgb(243, 42, 42); border-left: solid 5px black; border-top-left-radius: 30%;" onclick="blink(); turn('off')">Off</button>
+        </div>
+
+        <!--Contains all the known channels-->
+        <div id="channelList">
+            <!--Language Label-->
+            <label>Language</label>
+            <br>
+            <br>
+            <!--Select a language dropdown-->
+            <select name="" id="lang" onchange="blink();selectLang()">
+                <!--Default-->
+                <option value="frst" style="font-size: 80%;" selected disabled>Choose a language</option>
+                <!--Bengali-->
+                <option value="Bengali">Bengali</option>
+                <!--Hindi-->
+                <option value="Hindi">Hindi</option>
+            </select>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <!--Show Channel name label-->
+            <label style="font-size: 150%;" id="channelName"></label>
+
+
+            <!--Contains all the channels-->
+            <div id="channels">
+                <img src="zbn.png" id="one" onclick="chngName('zbn')">
+                <img src="zbnc.png" id="two" onclick="chngName('zbnc')">
+                <img src="ddbn.png" id="three" onclick="chngName('ddbn')">
+                <img src="sa.png" id="four" onclick="chngName('sa')">
+                <img src="aa.png" id="five" onclick="chngName('aa')">
+                <img src="abp.png" id="six" onclick="chngName('abp')">
+                <img src="z24.png" id="seven" onclick="chngName('z24')">
+                <img src="cbn.png" id="eight" onclick="chngName('cbn')">
+                <img src="sgbn.png" id="nine" onclick="chngName('sgbn')">
+                <img src="n18bn.png" id="ten" onclick="chngName('n18bn')">
+            </div>
+
+            <!--After Selecting a channel, press this button to play it-->
+            <button id="playChnl" onclick="play()">Play</button>
+        </div>
+        
+    </body>
+
+
+    <!--Firebase in the HOUUUUSSSSSSSSEEEEE--->
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/8.8.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.8.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.8.0/firebase-database.js"></script>
+
+    <!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries--> 
+    <script src="https://www.gstatic.com/firebasejs/8.8.0/firebase-analytics.js"></script>
+
+    <script>
+    // Your web app's Firebase configuration
+    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+    var firebaseConfig = {
+        apiKey: "AIzaSyD538CvnwP_iFAhPPAwT1zyuyKLoz8TC9g",
+        authDomain: "akola-air.firebaseapp.com",
+        projectId: "akola-air",
+        storageBucket: "akola-air.appspot.com",
+        messagingSenderId: "187120017549",
+        appId: "1:187120017549:web:214bd79b720f1f18cb02c4",
+        measurementId: "G-42V9WQCNV1"
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    firebase.analytics();
+    </script>
+
+    <script>
+        //All variables here
+        var signal = document.getElementById('signal');
+        var channelName = document.getElementById('channelName');
+        var channels = document.getElementById('channels');
+        var lang = document.getElementById('lang');
+        var one = document.getElementById('one');
+        var two = document.getElementById('two');
+        var three = document.getElementById('three');
+        var four = document.getElementById('four');
+        var five = document.getElementById('five');
+        var six = document.getElementById('six');
+        var seven = document.getElementById('seven');
+        var eight = document.getElementById('eight');
+        var nine = document.getElementById('nine');
+        var ten = document.getElementById('ten');
+        var playChnl = document.getElementById('playChnl');
+        var whichChnl = '';
+        var fireRef = firebase.database();
+        var waitDiv = document.getElementById('waitDiv');
+        var channelList = document.getElementById('channelList');
+        
+        
+        
+        
+        
+        
+        
+        
+        //when a button is clicked, LED blinks
+        function blink(){
+            signal.style.display = 'block';
+
+            setTimeout(blinkStop, 150);
+        }
+        function blinkStop(){
+            signal.style.display = 'none';
+        }
+        /*******************************************/
+
+
+        //Select a language to watch channels
+        function selectLang(){
+            //Set Channel Name Blank whenever language changed
+            channelName.innerHTML = '';
+            playChnl.style.display = 'none';
+            //Scroll to starting
+            channels.scrollTo(0,0);
+
+            /*********If Language Chosen is Hindi***********/
+            if(lang.value=='Hindi'){
+                channels.style.display = 'flex';
+                $(one).attr({
+                    "src":"pg.png",
+                    "onclick":"chngName('pg')"
+                });
+                $(two).attr({
+                    "src":"cn.png",
+                    "onclick":"chngName('cn')"
+                });
+                $(three).attr({
+                    "src":"sshd.png",
+                    "onclick":"chngName('sshd')"
+                });
+                $(four).attr({
+                    "src":"spl.png",
+                    "onclick":"chngName('spl')"
+                });
+                $(five).attr({
+                    "src":"sehd.png",
+                    "onclick":"chngName('sehd')"
+                });
+                $(six).attr({
+                    "src":"smhd.png",
+                    "onclick":"chngName('smhd')"
+                });
+                $(seven).attr({
+                    "src":"smsd.png",
+                    "onclick":"chngName('smsd')"
+                });
+                $(eight).attr({
+                    "src":"sm2.png",
+                    "onclick":"chngName('sm2')"
+                });
+                $(nine).attr({
+                    "src":"zchd.png",
+                    "onclick":"chngName('zchd')"
+                });
+                $(ten).attr({
+                    "src":"zbol.png",
+                    "onclick":"chngName('zbol')"
+                });
+            }
+
+            /************If Language Chosen is Bengali**********/
+            else if(lang.value='Bengali'){
+                channels.style.display = 'flex';
+                $(one).attr({
+                    "src":"zbn.png",
+                    "onclick":"chngName('zbn')"
+                });
+                $(two).attr({
+                    "src":"zbnc.png",
+                    "onclick":"chngName('zbnc')"
+                });
+                $(three).attr({
+                    "src":"ddbn.png",
+                    "onclick":"chngName('ddbn')"
+                });
+                $(four).attr({
+                    "src":"sa.png",
+                    "onclick":"chngName('sa')"
+                });
+                $(five).attr({
+                    "src":"aa.png",
+                    "onclick":"chngName('aa')"
+                });
+                $(six).attr({
+                    "src":"abp.png",
+                    "onclick":"chngName('abp')"
+                });
+                $(seven).attr({
+                    "src":"z24.png",
+                    "onclick":"chngName('z24')"
+                });
+                $(eight).attr({
+                    "src":"cbn.png",
+                    "onclick":"chngName('cbn')"
+                });
+                $(nine).attr({
+                    "src":"sgbn.png",
+                    "onclick":"chngName('sgbn')"
+                });
+                $(ten).attr({
+                    "src":"n18bn.png",
+                    "onclick":"chngName('n18bn')"
+                });
+            }
+            else{
+                channels.style.display = none;
+            }
+        }
+
+
+        //Change Channel name and store data to local
+        function chngName(chnl){
+            
+            playChnl.style.display = 'block';
+            whichChnl = chnl;
+            switch(chnl){
+                case 'zbn':
+                    channelName.innerHTML = 'Zee Bangla';
+                    break;
+                case 'zbnc':
+                    channelName.innerHTML = 'Zee Bangla Cinema';
+                    break;
+                case 'ddbn':
+                    channelName.innerHTML = 'DD Bangla';
+                    break;
+                case 'sa':
+                    channelName.innerHTML = 'Sony Aath (8)';
+                    break;
+                case 'aa':
+                    channelName.innerHTML = 'Akash Aath (8)';
+                    break;
+                case 'abp':
+                    channelName.innerHTML = 'ABP Ananda';
+                    break;
+                case 'z24':
+                    channelName.innerHTML = 'Zee 24 Ghanta';
+                    break;
+                case 'cbn':
+                    channelName.innerHTML = 'Colors Bangla';
+                    break;
+                case 'sgbn':
+                    channelName.innerHTML = 'Sangeet Bangla';
+                    break;
+                case 'n18bn':
+                    channelName.innerHTML = 'News 18 Bangla';
+                    break; 
+                case 'pg':
+                    channelName.innerHTML = 'Pogo';
+                    break;
+                case 'cn':
+                    channelName.innerHTML = 'Cartoon Network';
+                    break;
+                case 'sshd':
+                    channelName.innerHTML = 'Sony Sab (Tarak Mehta)';
+                    break;
+                case 'spl':
+                    channelName.innerHTML = 'Sony Pal (Tarak Mehta)';
+                    break;
+                case 'sehd':
+                    channelName.innerHTML = 'Sony Entertainment (CID)';
+                    break;
+                case 'smhd':
+                    channelName.innerHTML = 'Sony Max HD';
+                    break;
+                case 'smsd':
+                    channelName.innerHTML = 'Sony Max SD';
+                    break;
+                case 'sm2':
+                    channelName.innerHTML = 'Sony Max 2';
+                    break;
+                case 'zchd':
+                    channelName.innerHTML = 'Zee Cinema HD';
+                    break;
+                case 'zbol':
+                    channelName.innerHTML = 'Zee Bollywood';
+                    break;    
+            }
+        }
+
+        function play(){
+            channelName.innerHTML = '';
+            playChnl.style.display = 'none';
+            fireRef.ref('channel').set(whichChnl);
+            fireRef.ref('wait').set('yes');
+        }
+
+
+        function turn(action){
+            fireRef.ref('action').set(action);
+            fireRef.ref('wait').set('yes');
+            if(action=='on'){
+                channelList.style.display = 'flex';
+            }
+            else{
+                channelList.style.display = 'none';
+            }
+        }
+
+        fireRef.ref('wait').on('value', function(snapshot){
+            if(snapshot.val()=='yes'){
+                waitDiv.style.height = '100%';
+                waitDiv.style.fontSize = '250%'
+            }
+            else{
+                waitDiv.style.height = '0%';
+                waitDiv.style.fontSize = '0%';
+            }
+        });
+    </script>
+</html>
