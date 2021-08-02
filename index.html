@@ -110,7 +110,6 @@
                 height: 100%;
                 position: fixed;
                 z-index: 10;
-                transition: 0.5s;
                 color: white;
                 display: flex;
                 justify-content: center;
@@ -127,7 +126,7 @@
         />
 
         <div id="waitDiv">
-            Please Wait...
+            TV is Off
         </div>
         
 
@@ -438,13 +437,13 @@
             channelName.innerHTML = '';
             playChnl.style.display = 'none';
             fireRef.ref('channel').set(whichChnl);
-            fireRef.ref('wait').set('yes');
+            setTimeout(waitDelay, 1200);
         }
 
 
         function turn(action){
             fireRef.ref('action').set(action);
-            fireRef.ref('wait').set('yes');
+            setTimeout(waitDelay, 1200);
             if(action=='on'){
                 channelList.style.display = 'flex';
             }
@@ -455,13 +454,19 @@
 
         fireRef.ref('wait').on('value', function(snapshot){
             if(snapshot.val()=='yes'){
-                waitDiv.style.height = '100%';
-                waitDiv.style.fontSize = '250%'
+                waitDiv.innerHTML = "Please Wait...";
+                waitDiv.style.display = 'flex';
+            }
+            else if(snapshot.val()=='tvOff'){
+                waitDiv.style.display = 'flex';
+                waitDiv.innerHTML = "TV is Off";
             }
             else{
-                waitDiv.style.height = '0%';
-                waitDiv.style.fontSize = '0%';
+                waitDiv.style.display = 'none';
             }
         });
+        function waitDelay(){
+            fireRef.ref('wait').set('yes');
+        }
     </script>
 </html>
